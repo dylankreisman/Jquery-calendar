@@ -1,30 +1,47 @@
 //date and time
-var datetime = null,
-        date = null;
+
+
+var datetime = null
+var date = null;
 
 var update = function () {
     date = moment(new Date())
     datetime.html(date.format('dddd, MMMM Do YYYY, h:mm:ss a'));
 };
 
-$(document).ready(function(){
-    datetime = $('#currentDay')
-    update();
-    setInterval(update, 1000);
-});
+datetime = $('#currentDay')
+update();
+setInterval(update, 1000);
 
-//color code for business hours
-var colorTime = (new Date()).getHours();
-$ ('.colorcode')
-    .each(function(){
-        var val = parseInt($(this).prop('id'));
-            if (val > colorTime && val < colorTime + 6){
-                $(this).css('background-color', 'green')
+
+
+function rightColor() {
+    var rightTime = moment().hours();
+
+    $('.time-block')
+        .each(function () {
+            var val = parseInt($(this)[0].dataset.time);
+            if (val > rightTime) {
+                $(this).addClass('future')
             }
-            else if (val < colorTime && val > colorTime-6){
-                $(this).css('background-color', 'red')
+            else if (val < rightTime) {
+                $(this).addClass('past')
             }
-            else if (val === colorTime)
-            $(this).css('background-color', 'yellow')
-            console.log('sup')
-    })
+            else
+                $(this).addClass('present')
+        })
+}
+rightColor()
+
+$(".saveBtn").click(function () {
+    localStorage.setItem(
+        //Set the key in local storage
+        $(this).parent()[0].dataset.time,
+        //Set the Value in local storage
+        $(this).siblings()[1].value
+    )
+})
+$('textarea').each(function () {
+    // Get value from localStorage based on parent element's dataset
+    $(this).val(localStorage.getItem($(this).parent()[0].dataset.time))
+})
